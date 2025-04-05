@@ -7,8 +7,8 @@ def writeGraph(filename, G):
     
     file = open(filename, 'w')
     for edge in G.edges():
-        node1 = str(G.node[edge[0]]['label'])
-        node2 = str(G.node[edge[1]]['label'])
+        node1 = str(G.nodes[edge[0]]['label'])
+        node2 = str(G.nodes[edge[1]]['label'])
         file.write(node1+'\t'+node2+'\n')
     file.close()
 
@@ -25,17 +25,17 @@ def getGraph(filename):
         index2=int(temp[1])
         G.add_edge(index1,index2)         
     f.close()
-    nx.set_node_attributes(G, 'label', labels)
+    nx.set_node_attributes(G, labels, 'label')
     return G
 
 
 def randomWalk(G, walkSize):
     walkList= []
-    curNode = random.choice(G.nodes())
+    curNode = random.choice(list(G.nodes()))
 
     while(len(walkList) < walkSize):
-        walkList.append(G.node[curNode]['label'])
-        curNode = random.choice(G.neighbors(curNode))  
+        walkList.append(G.nodes[curNode]['label'])
+        curNode = random.choice(list(G.neighbors(curNode)))  
     return walkList
     
 def getStats(G):

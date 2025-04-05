@@ -19,16 +19,16 @@ def generateDegreeWalk(Graph, walkSize):
     return walk
 
 def randomWalkDegreeLabels(G, walkSize):
-    curNode = random.choice(G.nodes())
+    curNode = random.choice(list(G.nodes()))
     walkList= []
 
     while(len(walkList) < walkSize):
-        walkList.append(G.node[curNode]['label'])
-        curNode = random.choice(G.neighbors(curNode))  
+        walkList.append(G.nodes[curNode]['label'])
+        curNode = random.choice(list(G.neighbors(curNode)))  
     return walkList
 
 def getDegreeLabelledGraph(G, rangetoLabels):
-    degreeDict = G.degree(G.nodes())
+    degreeDict = dict(G.degree(G.nodes()))
     labelDict = {}
     for node in degreeDict.keys():
         val = degreeDict[node]/float(nx.number_of_nodes(G))
@@ -36,7 +36,7 @@ def getDegreeLabelledGraph(G, rangetoLabels):
         #val = degreeDict[node]/float(nx.number_of_nodes(G))
         #labelDict[node] = degreeDict[node]
         
-        nx.set_node_attributes(G, 'label', labelDict)
+        nx.set_node_attributes(G, labelDict, 'label')
     
     return G
 
@@ -88,9 +88,9 @@ def structural_embedding(args):
     indexToName = generateWalkFile(inputDir, args.walkLength, args.p)
     sentences = doc.TaggedLineDocument(inputDir+'.walk')
     
-    model = doc.Doc2Vec(sentences, size = dimensions, iter = iterations, dm = dm, window = window )
-    
-    saveVectors(list(model.docvecs), outputFile, indexToName)
+    model = doc.Doc2Vec(sentences, vector_size = dimensions, epochs = iterations, dm = dm, window = window )
+
+    saveVectors([model.dv[i] for i in range(len(model.dv))], outputFile, indexToName)
     
     
     
