@@ -3,7 +3,7 @@ import os
 import graphUtils_s
 import random
 import networkx as nx
-
+from tqdm import tqdm
 
 def arr2str(arr):
     result = ""
@@ -51,8 +51,8 @@ def generateWalkFile(dirName, walkLength, alpha):
     rangetoLabels = {(0, 0.05):'z',(0.05, 0.1):'a', (0.1, 0.15):'b', (0.15, 0.2):'c', (0.2, 0.25):'d', (0.25, 0.5):'e', (0.5, 0.75):'f',(0.75, 1.0):'g'}
     for  root, dirs, files in os.walk(dirName):
         index = 0
-        for name in files:
-            print(name)
+        for name in tqdm(files, desc="Generating walks", total=len(files)):
+            # print(name)
             
             subgraph = graphUtils_s.getGraph(os.path.join(root, name))
             degreeGraph = getDegreeLabelledGraph(subgraph, rangetoLabels)
