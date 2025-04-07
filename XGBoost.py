@@ -2,38 +2,44 @@ import pandas as pd
 import xgboost as xgb
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.preprocessing import LabelEncoder
+import pathlib
 
+# Save model in "./save_model" directory
+# Save classification report and confusion matrix in "./result" directory
 if __name__ == '__main__':
     model_input = pd.read_csv('model_input.csv')
 
-    # Separate the rows where label is 5
-    label_5_data = model_input[model_input['label'] == 5]
-    # Randomly sample 10000 rows from label 5 data
-    label_5_sampled = label_5_data.sample(n=10000, random_state=42)
-    # Get the rows where label is not 5
-    other_labels_data = model_input[model_input['label'] != 5]
-    # Combine the sampled label 5 data with the other labels data
-    model_input_filt = pd.concat([label_5_sampled, other_labels_data], ignore_index=True)
-
-    # model_input_filt.to_csv('model_input_filt.csv', index=False)
+    # Encode labels
+    le = LabelEncoder()
+    le.fit_transform(model_input["label"])
 
     # Prepare features and labels
-    X = model_input_filt.drop(columns=["subGraphID", "label"])
-    y = model_input_filt["label"]
+    train_df = model_input[model_input["train_or_test"] == "train"]
+    test_df = model_input[model_input["train_or_test"] == "test"]
+    X_train = train_df.drop(columns=["subGraphID", "label", "train_or_test"])
+    X_test = test_df.drop(columns=["subGraphID", "label", "train_or_test"])
+    y_train = train_df["label"]
+    y_test = test_df["label"]
 
-    # Encode label
-    le = LabelEncoder()
-    y_encoded = le.fit_transform(y)
+    model_path = pathlib.Path("./save_model")
+    model_path.mkdir(parents=True, exist_ok=True)
+    save_model_path = model_path / "xgboost_model.json"
+    if save_model_path.exists():
+        print(f"Model already exists at {save_model_path}.")
+        # Load the model
+        model = xgb.XGBClassifier()
+        model.load_model(str(save_model_path))
+    else:
+        print(f"Model does not exist at {save_model_path}. Training a new model.")
 
-    # Split into train/test sets (75% train / 25% test)
-    X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.25, random_state=42)
+        # Train XGBoost model
+        model = xgb.XGBClassifier(eval_metric='mlogloss', objective='multi:softmax', num_class=6, random_state=42)
+        model.fit(X_train, y_train)
 
-    # Train XGBoost model
-    model = xgb.XGBClassifier(eval_metric='mlogloss', objective='multi:softmax', num_class=6, random_state=42)
-    model.fit(X_train, y_train)
+        # Save the model
+        model.save_model(str(save_model_path))
 
     # Make predictions
     y_pred = model.predict(X_test)

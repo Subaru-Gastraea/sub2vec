@@ -29,7 +29,7 @@ def create_model_input(args):
     labels_df = pd.read_csv(graph_label_path)
 
     # Merge embeddings with labels
-    merged_df = pd.merge(embedding_df, labels_df, on="subGraphID")
+    merged_df = pd.merge(embedding_df, labels_df, on="subGraphID", how="left")
 
     # Save the merged DataFrame to a CSV file
     merged_df.to_csv("model_input.csv", index=False)
@@ -40,4 +40,5 @@ if __name__ == '__main__':
     parser.add_argument('--graph_label_path', type=str, default='labels.csv', required=True, help='Path to the graph labels file')
     args = parser.parse_args()
 
+    # Create model_input.csv (graph embeddings + label + train/test flag)
     create_model_input(args)

@@ -28,6 +28,8 @@ def main():
                       
     args = parser.parse_args()
     
+    # Generate feature embeddings for each subgraph (stored in '--output' file)
+    # .walk file is created for generating the embeddings
     if args.property == 's':
         structural_embedding(args)
     else:

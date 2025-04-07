@@ -1,14 +1,11 @@
 
-INPUT = input
-OUTPUT = output
-PROPERTY = n
-
-
 demo:
-	python src/main.py  --input $(INPUT)  --output $(OUTPUT) --property $(PROPERTY)
+	python gen_subgraphs.py --dataset 'patients_graphs/' --output 'input/' --test_time_slice 0.5 --test_size 0.25
+	python src/main.py --input input  --output  output --walkLength 50 --iter 10 --property s
+	python create_model_input.py --graph_emb_path 'output' --graph_label_path 'labels.csv'
+	python XGBoost.py
 
 clean:
-	rm -rf ./input.walk ./output
-	
-help:
-	python src/main.py  --help
+	rm -r ./bak/*
+	mv -r ./input/ ./labels.csv ./input.walk ./output ./model_input.csv ./result/ ./save_model/xgboost_model.json ./bak/
+	mkdir ./input ./result
