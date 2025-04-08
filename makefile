@@ -5,7 +5,7 @@ run_subgraphs:
 
 # step 2
 run_sub2vec:
-	python src/main.py --input input --output output --walkLength 1000 --iter 10 --property s
+	python src/main.py --input input --output output --walkLength 5000 --iter 10 --property s
 
 # step 3
 run_model:

@@ -4,6 +4,7 @@ import graphUtils_s
 import random
 import networkx as nx
 from tqdm import tqdm
+import time
 
 def arr2str(arr):
     result = ""
@@ -69,7 +70,7 @@ def saveVectors(vectors, outputfile, IdToName):
     output = open(outputfile, 'w')
     
     output.write(str(len(vectors)) +"\n")
-    for i in tqdm(range(len(vectors)), desc="Saving vectors", total=len(vectors)):
+    for i in range(len(vectors)):
         output.write(str(IdToName[i]))
         for j in vectors[i]:
             output.write('\t'+ str(j))
@@ -88,7 +89,10 @@ def structural_embedding(args):
     indexToName = generateWalkFile(inputDir, args.walkLength, args.p)
     sentences = doc.TaggedLineDocument(inputDir+'.walk')
     
-    model = doc.Doc2Vec(sentences, vector_size = dimensions, epochs = iterations, dm = dm, window = window )
+    start_time = time.time()
+    model = doc.Doc2Vec(sentences, vector_size=dimensions, epochs=iterations, dm=dm, window=window)
+    end_time = time.time()
+    print(f"Doc2Vec model training completed in {(end_time - start_time) / 60:.2f} minutes.")
 
     saveVectors([model.dv[i] for i in range(len(model.dv))], outputFile, indexToName)
     
