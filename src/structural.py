@@ -69,7 +69,7 @@ def saveVectors(vectors, outputfile, IdToName):
     output = open(outputfile, 'w')
     
     output.write(str(len(vectors)) +"\n")
-    for i in range(len(vectors)):
+    for i in tqdm(range(len(vectors)), desc="Saving vectors", total=len(vectors)):
         output.write(str(IdToName[i]))
         for j in vectors[i]:
             output.write('\t'+ str(j))
