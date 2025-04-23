@@ -4,8 +4,9 @@ run_subgraphs:
 	python gen_subgraphs.py --dataset 'patients_graphs/' --output 'input/' --test_time_slice 1.0 --test_size 0.25
 
 # step 2
+# --walkLength 5000
 run_sub2vec:
-	python src/main.py --input input --output output --walkLength 5000 --iter 10 --property s
+	python src/main.py --input input --output output --walkLength 100 --iter 10 --property s
 
 # step 3
 run_model:
@@ -14,9 +15,9 @@ run_model:
 
 # Run all
 run:
-	run_subgraphs
-	run_sub2vec
-	run_model
+	make run_subgraphs
+	make run_sub2vec
+	make run_model
 
 clean_bak:
 	rm -r ./bak/*
@@ -44,5 +45,5 @@ bak_model:
 
 # clean and backup all
 clean:
-	clean_bak
-	bak_all
+	make clean_bak
+	make bak_all

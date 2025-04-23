@@ -1,19 +1,21 @@
 import pandas as pd
-import xgboost as xgb
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.preprocessing import LabelEncoder
 import pathlib
+
+import os
+import sys
+
+# Add the parent directory to sys.path
+# Executing path: ddx-on-ehr/models/sub2vec/
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))     # ddx-on-ehr/models/
+from XGB_Classifier import XGBoostClassifierWrapper
 
 # Save model in "./save_model" directory
 # Save classification report and confusion matrix in "./result" directory
 if __name__ == '__main__':
     model_input = pd.read_csv('model_input.csv')
-
-    # Encode labels
-    le = LabelEncoder()
-    le.fit_transform(model_input["label"])
+    num_classes  = 6
 
     # Prepare features and labels
     train_df = model_input[model_input["train_or_test"] == "train"]
@@ -28,32 +30,28 @@ if __name__ == '__main__':
     save_model_path = model_path / "xgboost_model.json"
     if save_model_path.exists():
         print(f"Model already exists at {save_model_path}.")
-        # Load the model
-        model = xgb.XGBClassifier()
-        model.load_model(str(save_model_path))
+        # Load the model using the wrapper
+        model = XGBoostClassifierWrapper(model_path=save_model_path)
+        model.load()
     else:
         print(f"Model does not exist at {save_model_path}. Training a new model.")
 
-        # Train XGBoost model
-        model = xgb.XGBClassifier(eval_metric='mlogloss', objective='multi:softmax', num_class=6, random_state=42)
+        # Train XGBoost model using the wrapper
+        model = XGBoostClassifierWrapper(model_path=save_model_path, num_class=num_classes, eval_metric='mlogloss', objective='multi:softmax')
         model.fit(X_train, y_train)
 
         # Save the model
-        model.save_model(str(save_model_path))
-
-    # Make predictions
-    y_pred = model.predict(X_test)
+        model.save()
 
     # Evaluate performance
-    accuracy = accuracy_score(y_test, y_pred)
-    report = classification_report(y_test, y_pred)
-    conf_matrix = confusion_matrix(y_test, y_pred)
+    accuracy, report, conf_matrix = model.evaluate(X_test, y_test)
 
     print("Accuracy:", accuracy)
     print("Classification Report:\n", report)
     print("Confusion Matrix:\n", conf_matrix)
 
     # Save reports
+    pathlib.Path("result").mkdir(parents=True, exist_ok=True)
     with open("result/classification_report.txt", "w") as f:
         f.write(f"Accuracy: {accuracy}\n")
         f.write("Classification Report:\n")
@@ -61,7 +59,8 @@ if __name__ == '__main__':
 
     # Plot confusion matrix
     plt.figure(figsize=(6, 4))
-    sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", xticklabels=le.classes_, yticklabels=le.classes_)
+    labels = [str(i) for i in range(num_classes)]
+    sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", xticklabels=labels, yticklabels=labels)
     plt.title("Confusion Matrix")
     plt.xlabel("Predicted")
     plt.ylabel("Actual")
