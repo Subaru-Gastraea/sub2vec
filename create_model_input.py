@@ -5,6 +5,7 @@ def create_model_input(args):
 
     graph_emb_path = args.graph_emb_path
     graph_label_path = args.graph_label_path
+    model_input_filename = args.model_input_filename
 
     # Load the graph embeddings
     with open(graph_emb_path, "r") as file:
@@ -32,12 +33,13 @@ def create_model_input(args):
     merged_df = pd.merge(embedding_df, labels_df, on="subGraphID", how="left")
 
     # Save the merged DataFrame to a CSV file
-    merged_df.to_csv("model_input.csv", index=False)
+    merged_df.to_csv(model_input_filename, index=False)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Create model input.")
     parser.add_argument('--graph_emb_path', type=str, default='output', required=True, help='Path to the graph embeddings file')
     parser.add_argument('--graph_label_path', type=str, default='labels.csv', required=True, help='Path to the graph labels file')
+    parser.add_argument('--model_input_filename', type=str, default='model_input.csv', required=True, help='Output filename for the model input CSV')
     args = parser.parse_args()
 
     # Create model_input.csv (graph embeddings + label + train/test flag)

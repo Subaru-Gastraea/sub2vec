@@ -170,14 +170,12 @@ cython_debug/
 # backup files
 bak/
 
-# dataset
-patients_graphs/
-
 # input subgraphs
-input/
+*input/
 
 # preprocessed files
-input.walk
-output
-labels.csv
-model_input.csv
+*input.walk
+*output
+*labels.csv
+train.csv
+test.csv

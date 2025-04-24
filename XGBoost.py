@@ -6,6 +6,8 @@ import pathlib
 import os
 import sys
 
+import argparse
+
 # Add the parent directory to sys.path
 # Executing path: ddx-on-ehr/models/sub2vec/
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))     # ddx-on-ehr/models/
@@ -14,20 +16,25 @@ from XGB_Classifier import XGBoostClassifierWrapper
 # Save model in "./save_model" directory
 # Save classification report and confusion matrix in "./result" directory
 if __name__ == '__main__':
-    model_input = pd.read_csv('model_input.csv')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model_name', type=str, default='base_xgboost_model.json', required=True, help='Name of the model file to save/load')
+    parser.add_argument('--train_file', type=str, default='./train.csv', required=True, help='Path to the training data directory')
+    parser.add_argument('--test_file', type=str, default='./test.csv', required=True, help='Path to the testing data directory')
+    args = parser.parse_args()
+
+    train_df = pd.read_csv(args.train_file)
+    test_df = pd.read_csv(args.test_file)
     num_classes  = 6
 
     # Prepare features and labels
-    train_df = model_input[model_input["train_or_test"] == "train"]
-    test_df = model_input[model_input["train_or_test"] == "test"]
-    X_train = train_df.drop(columns=["subGraphID", "label", "train_or_test"])
-    X_test = test_df.drop(columns=["subGraphID", "label", "train_or_test"])
+    X_train = train_df.drop(columns=["subGraphID", "label"])
+    X_test = test_df.drop(columns=["subGraphID", "label"])
     y_train = train_df["label"]
     y_test = test_df["label"]
 
     model_path = pathlib.Path("./save_model")
     model_path.mkdir(parents=True, exist_ok=True)
-    save_model_path = model_path / "xgboost_model.json"
+    save_model_path = model_path / args.model_name
     if save_model_path.exists():
         print(f"Model already exists at {save_model_path}.")
         # Load the model using the wrapper
@@ -44,16 +51,14 @@ if __name__ == '__main__':
         model.save()
 
     # Evaluate performance
-    accuracy, report, conf_matrix = model.evaluate(X_test, y_test)
+    report, conf_matrix = model.evaluate(X_test, y_test)
 
-    print("Accuracy:", accuracy)
     print("Classification Report:\n", report)
     print("Confusion Matrix:\n", conf_matrix)
 
     # Save reports
     pathlib.Path("result").mkdir(parents=True, exist_ok=True)
     with open("result/classification_report.txt", "w") as f:
-        f.write(f"Accuracy: {accuracy}\n")
         f.write("Classification Report:\n")
         f.write(report)
 
