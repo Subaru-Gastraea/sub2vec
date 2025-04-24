@@ -20,6 +20,7 @@ if __name__ == '__main__':
     parser.add_argument('--model_name', type=str, default='base_xgboost_model.json', required=True, help='Name of the model file to save/load')
     parser.add_argument('--train_file', type=str, default='./train.csv', required=True, help='Path to the training data directory')
     parser.add_argument('--test_file', type=str, default='./test.csv', required=True, help='Path to the testing data directory')
+    parser.add_argument('--aux_prob', action='store_true', default=False, help='Use auxiliary probabilities (graphgen similarities) for evaluation')
     args = parser.parse_args()
 
     train_df = pd.read_csv(args.train_file)
@@ -51,7 +52,14 @@ if __name__ == '__main__':
         model.save()
 
     # Evaluate performance
-    report, conf_matrix = model.evaluate(X_test, y_test)
+    if args.aux_prob:
+        # Load auxiliary probabilities
+        aux_prob = pd.read_csv("../graphgen/all_norm_avg_sims.csv", header=None)
+        aux_prob = aux_prob.to_numpy()
+        report, conf_matrix = model.evaluate_proba(X_test, y_test, aux_proba=aux_prob)
+    else:
+        # Evaluate without auxiliary probabilities
+        report, conf_matrix = model.evaluate(X_test, y_test)
 
     print("Classification Report:\n", report)
     print("Confusion Matrix:\n", conf_matrix)

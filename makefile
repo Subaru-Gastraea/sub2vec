@@ -7,6 +7,7 @@ WALKLENGTH = 50
 
 # run_model
 MODEL_NAME = 'non_weighted_xgboost_model.json'
+AUX_PROB = --aux_prob	# '--aux_prob'
 
 ##################################################################
 
@@ -20,15 +21,19 @@ run_sub2vec:
 	python src/main.py --input test_input --output test_output --walkLength $(WALKLENGTH) --iter 10 --property s
 
 # step 3
-run_model:
+run_model_input:
 	python create_model_input.py --graph_emb_path 'train_output' --graph_label_path 'train_labels.csv' --model_input_filename 'train.csv'
 	python create_model_input.py --graph_emb_path 'test_output' --graph_label_path 'test_labels.csv' --model_input_filename 'test.csv'
-	python XGBoost.py --model_name $(MODEL_NAME) --train_file 'train.csv' --test_file 'test.csv'
+
+# step 4
+run_model:
+	python XGBoost.py --model_name $(MODEL_NAME) --train_file 'train.csv' --test_file 'test.csv' $(AUX_PROB)
 
 # Run all
 run:
 	make run_subgraphs
 	make run_sub2vec
+	make run_model_input
 	make run_model
 
 clean_bak:
@@ -39,17 +44,27 @@ bak_all:
 
 	mv ./*input.walk ./*output ./bak/
 
-	mv ./train.csv ./test.csv ./result/ ./save_model/*.json ./bak/
+	mv ./train.csv ./test.csv ./bak/
 
-# bak step 2, 3
+	mv ./result/ ./bak/
+
+# bak step 2, 3, 4
 bak_sub2vec:
 	mv ./*input.walk ./*output ./bak/
 
-	mv ./train.csv ./test.csv ./result/ ./save_model/*.json ./bak/
+	mv ./train.csv ./test.csv ./bak/
 
-# bak step 3
+	mv ./result/ ./bak/
+
+# bak step 3, 4
+bak_model_input:
+	mv ./train.csv ./test.csv ./bak/
+
+	mv ./result/ ./bak/
+
+# bak step 4
 bak_model:
-	mv ./train.csv ./test.csv ./result/ ./save_model/*.json ./bak/
+	mv ./result/ ./bak/
 
 # clean and backup all
 clean:
