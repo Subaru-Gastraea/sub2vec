@@ -8,6 +8,8 @@ WALKLENGTH = 50
 # run_model
 MODEL_NAME = 'non_weighted_xgboost_model.json'
 AUX_PROB = --aux_prob	# '--aux_prob'
+PROB_RATIO = 0.9	# \alpha
+AUX_PROB_RATIO = 0.1	# \beta
 
 ##################################################################
 
@@ -27,7 +29,7 @@ run_model_input:
 
 # step 4
 run_model:
-	python XGBoost.py --model_name $(MODEL_NAME) --train_file 'train.csv' --test_file 'test.csv' $(AUX_PROB)
+	python XGBoost.py --model_name $(MODEL_NAME) --train_file 'train.csv' --test_file 'test.csv' $(AUX_PROB) --prob_ratio $(PROB_RATIO) --aux_prob_ratio $(AUX_PROB_RATIO)
 
 # Run all
 run:

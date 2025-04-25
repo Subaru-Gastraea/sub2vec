@@ -21,6 +21,8 @@ if __name__ == '__main__':
     parser.add_argument('--train_file', type=str, default='./train.csv', required=True, help='Path to the training data directory')
     parser.add_argument('--test_file', type=str, default='./test.csv', required=True, help='Path to the testing data directory')
     parser.add_argument('--aux_prob', action='store_true', default=False, help='Use auxiliary probabilities (graphgen similarities) for evaluation')
+    parser.add_argument('--prob_ratio', type=float, default=1.0, help='Weight for the main model probabilities')
+    parser.add_argument('--aux_prob_ratio', type=float, default=1.0, help='Weight for the auxiliary probabilities')
     args = parser.parse_args()
 
     train_df = pd.read_csv(args.train_file)
@@ -56,7 +58,7 @@ if __name__ == '__main__':
         # Load auxiliary probabilities
         aux_prob = pd.read_csv("../graphgen/all_norm_avg_sims.csv", header=None)
         aux_prob = aux_prob.to_numpy()
-        report, conf_matrix = model.evaluate_proba(X_test, y_test, aux_proba=aux_prob)
+        report, conf_matrix = model.evaluate_proba(X_test, y_test, aux_proba=aux_prob, prob_ratio=args.prob_ratio, aux_prob_ratio=args.aux_prob_ratio)
     else:
         # Evaluate without auxiliary probabilities
         report, conf_matrix = model.evaluate(X_test, y_test)
