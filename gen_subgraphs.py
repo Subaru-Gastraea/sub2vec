@@ -17,6 +17,7 @@ from utils.graph_proc import GraphDataset
 
 def gen_split_subgraphs(dataset, time_slice_pct, output_path, split_set):
     dataset.set_split(split_set)
+    print(f"Generating {split_set} subgraphs with time slice percentage: {time_slice_pct} ...")
     dataset.time_slice_graphs(time_slice_pct)
 
     label_df = pd.DataFrame(columns=['subGraphID','label'])

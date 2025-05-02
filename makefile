@@ -1,6 +1,6 @@
 # run_subgraphs
 TRAIN_TIME_SLICE_PCT = 1.0
-TEST_TIME_SLICE_PCT = 1.0
+TEST_TIME_SLICE_PCT = 0.5
 
 # run_sub2vec
 WALKLENGTH = 50
@@ -8,8 +8,8 @@ WALKLENGTH = 50
 # run_model
 MODEL_NAME = 'non_weighted_xgboost_model.json'
 AUX_PROB = --aux_prob	# '--aux_prob'
-PROB_RATIO = 0.9	# \alpha
-AUX_PROB_RATIO = 0.1	# \beta
+PROB_RATIO = 1.0	# \alpha
+AUX_PROB_RATIO = 1.0	# \beta
 
 ##################################################################
 

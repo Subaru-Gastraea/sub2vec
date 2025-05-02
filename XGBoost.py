@@ -56,7 +56,7 @@ if __name__ == '__main__':
     # Evaluate performance
     if args.aux_prob:
         # Load auxiliary probabilities
-        aux_prob = pd.read_csv("../graphgen/all_norm_avg_sims.csv", header=None)
+        aux_prob = pd.read_csv("../graphgen/graph_sims/time_slice_pct_0.5/test_norm_avg_sims_v1.csv", header=None)
         aux_prob = aux_prob.to_numpy()
         report, conf_matrix = model.evaluate_proba(X_test, y_test, aux_proba=aux_prob, prob_ratio=args.prob_ratio, aux_prob_ratio=args.aux_prob_ratio)
     else:
