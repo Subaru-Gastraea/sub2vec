@@ -51,7 +51,7 @@ def gen_subgraphs(args):
          with open(sample_dataset_path, 'rb') as f:
             sample_dataset = pickle.load(f)
    
-    dataset = GraphDataset(sample_dataset, dev=False, project_root=project_root)
+    dataset = GraphDataset(sample_dataset, dev=False, diff_node_type_time=False, project_root=project_root)
     del sample_dataset
 
     gen_split_subgraphs(dataset, train_time_slice_pct, train_output_path, split_set='train')

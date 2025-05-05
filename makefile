@@ -6,8 +6,8 @@ TEST_TIME_SLICE_PCT = 0.5
 WALKLENGTH = 50
 
 # run_model
-MODEL_NAME = 'non_weighted_xgboost_model.json'
-AUX_PROB = --aux_prob	# '--aux_prob'
+MODEL_NAME = 'xgboost_model_without_note.json'
+AUX_PROB = 	# '--aux_prob'
 PROB_RATIO = 1.0	# \alpha
 AUX_PROB_RATIO = 1.0	# \beta
 
