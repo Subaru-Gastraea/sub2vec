@@ -1,6 +1,6 @@
 # run_subgraphs
 TRAIN_TIME_SLICE_PCT = 1.0
-TEST_TIME_SLICE_PCT = 0.5
+TEST_TIME_SLICE_PCT = 0.1
 
 # run_sub2vec
 WALKLENGTH = 50
